@@ -1,0 +1,28 @@
+# User profiles and sales data must never be committed.
+営業管理/
+**/営業管理/
+営業リスト.csv
+営業活動履歴.csv
+USER_PROFILE.md
+CURRENT_TASK.md
+profile*.json
+
+# Credentials and local configuration.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.mobileprovision
+
+# Local and generated files.
+.DS_Store
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+dist/
+build/

@@ -1,0 +1,20 @@
+{
+  "name": "video-sales-research-public",
+  "interface": {
+    "displayName": "映像営業調査"
+  },
+  "plugins": [
+    {
+      "name": "video-sales-research",
+      "source": {
+        "source": "local",
+        "path": "./plugins/video-sales-research"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

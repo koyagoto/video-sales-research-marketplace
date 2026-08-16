@@ -1,0 +1,34 @@
+{
+  "name": "video-sales-research",
+  "version": "3.1.1",
+  "description": "映像制作者向けの営業候補調査、100点採点、詐欺・個人情報対策、段階的再探索、営業進捗管理をまとめたプラグイン",
+  "author": {
+    "name": "Video Sales Research Project"
+  },
+  "homepage": "https://github.com/koyagoto/video-sales-research-marketplace",
+  "repository": "https://github.com/koyagoto/video-sales-research-marketplace",
+  "keywords": [
+    "video-production",
+    "sales-research",
+    "prospecting",
+    "crm"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "映像営業調査 v3.1.1",
+    "shortDescription": "安全確認付きの営業調査・採点・進捗管理",
+    "longDescription": "プロフィール一括登録を起点に、現在の公式情報を確認した営業候補調査、100点採点、詐欺・なりすまし確認、候補不足時の段階的な再探索、送信・返信・面談・受注の営業リスト管理まで支援します。",
+    "developerName": "Video Sales Research Project",
+    "category": "Productivity",
+    "capabilities": [
+      "Research",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "初期プロフィールの一括入力画面を表示してください。",
+      "現在のプロフィールで営業候補企業を調査してください。",
+      "営業リストの状況と送信・面談・受注件数を表示してください。"
+    ],
+    "brandColor": "#1E5AA8"
+  }
+}

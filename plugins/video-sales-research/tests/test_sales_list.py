@@ -140,6 +140,56 @@ class SalesListScriptTest(unittest.TestCase):
         )
         self.assertEqual(exclusion["result"], "error")
 
+    def test_saved_profile_survives_sales_list_initialization_and_updates(self):
+        profile_path = self.data_dir / "プロフィール.md"
+
+        self.run_script("init", "--dir", str(self.data_dir))
+        self.assertFalse(profile_path.exists())
+
+        profile_text = """# 保存済みプロフィール
+
+- 屋号・会社名：サンプル映像事業
+- 主な活動拠点：関西
+- 希望する発注元：広告代理店、Web制作会社、一般企業
+- 顧客業種を限定するか：限定しない
+"""
+        profile_path.write_text(profile_text, encoding="utf-8")
+        original_bytes = profile_path.read_bytes()
+
+        self.run_script(
+            "upsert",
+            "--dir",
+            str(self.data_dir),
+            "--company",
+            "移行テスト株式会社",
+            "--official-url",
+            "https://migration.example.invalid/",
+            "--checked-date",
+            "2026-08-24",
+            "--score",
+            "90",
+            "--evidence",
+            "80",
+            "--decision",
+            "暫定推薦",
+        )
+        self.run_script(
+            "event",
+            "--dir",
+            str(self.data_dir),
+            "--company",
+            "移行テスト株式会社",
+            "--type",
+            "送信",
+            "--date",
+            "2026-08-24",
+        )
+
+        self.assertEqual(profile_path.read_bytes(), original_bytes)
+        self.assertIn("希望する発注元", profile_path.read_text(encoding="utf-8"))
+        validated = self.run_script("validate", "--dir", str(self.data_dir))
+        self.assertEqual(validated, {"result": "valid", "issues": []})
+
 
 if __name__ == "__main__":
     unittest.main()

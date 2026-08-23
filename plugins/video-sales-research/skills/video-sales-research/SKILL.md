@@ -3,15 +3,15 @@ name: video-sales-research
 description: Register a video creator or production business profile in one batch, research current paid video-production sales opportunities, verify official evidence, score suitability, widen discovery when high-scoring candidates are scarce, and maintain a user-scoped sales list with contact, reply, meeting, proposal, win, loss, hold, and exclusion history. Use for onboarding, prospect research, scoring, evidence review, candidate comparison, outreach preparation, sales-list updates, pipeline summaries, and troubleshooting. Keep every user's profile, exclusions, research results, and sales data isolated to the current chat and user-selected workspace.
 ---
 
-# 映像営業調査 v3.1.3
+# 映像営業調査 v3.1.4
 
-This plugin preserves the research, scoring, onboarding, and privacy behavior of the approved v3.0.3 package. Version 3.1.3 keeps the v3.1.2 installation guidance, v3.1.0 sales-list behavior, and v3.1.1 public-distribution safeguards. It adds a separate buyer-diversity result section for advertising, PR, web, digital-marketing, and direct buyers without changing the 100-point scoring model, evidence minimum, or recommendation thresholds.
+This plugin preserves the research, scoring, onboarding, and privacy behavior of the approved v3.0.3 package. Version 3.1.4 keeps the v3.1.3 buyer-diversity results, v3.1.2 installation guidance, v3.1.0 sales-list behavior, and v3.1.1 public-distribution safeguards. It adds opt-in profile persistence and same-workspace profile resumption without changing the 100-point scoring model, evidence minimum, or recommendation thresholds.
 
 ## Boundaries
 
 - Keep the current user's profile, exclusion list, preferences, scores, research history, and sales data isolated from every other user.
 - Never store user data inside this plugin directory, its skills, scripts, assets, or bundled references.
-- Store durable sales data only in a workspace directory explicitly selected or confirmed by the current user.
+- Store durable profiles and sales data only in a workspace directory explicitly selected or confirmed by the current user.
 - Never reuse another user's profile, exclusions, candidates, sales list, or outputs.
 - Never treat examples, bundled templates, test companies, or prior simulations as current-user facts.
 - Do not expose internal filenames, agent structure, hidden state, or plugin storage paths unless the user asks for technical troubleshooting.
@@ -29,7 +29,9 @@ This plugin preserves the research, scoring, onboarding, and privacy behavior of
 
 ### 1. Establish the profile
 
-If the current chat has no confirmed profile, read `references/profile-intake.md` completely and show only its compact user-facing form.
+If the current chat has no confirmed profile and the user explicitly asks to resume or migrate a saved profile, read `references/profile-persistence.md` completely and follow its load workflow.
+
+Otherwise, read `references/profile-intake.md` completely and show only its compact user-facing form.
 
 Accept all fields in one response. Do not convert onboarding into one-question-at-a-time intake. Treat blank fields as unknown unless they are essential to safe research.
 
@@ -43,7 +45,7 @@ After receiving the response:
 6. Show a single confirmation summary with only essential unresolved questions.
 7. Wait for explicit confirmation before treating the profile as registered.
 
-Registration means confirmed state in the current chat. Do not create or edit a durable profile file unless the user separately asks for profile persistence. If asked, save only in the user-selected current workspace, never in this plugin.
+Registration means confirmed state in the current chat. Do not create or edit a durable profile file unless the user separately asks to save, resume, or migrate the profile. For those requests, read `references/profile-persistence.md` completely. Never save a profile in this plugin or a repository.
 
 ### 2. Research opportunities
 
@@ -85,7 +87,7 @@ Batch necessary questions into at most five concise questions. Drafting text doe
 
 ### 6. Provide help and reusable prompts
 
-When the user asks how to install, start, enter a profile, interpret results, manage the sales list, update conditions, or troubleshoot the workflow, read `references/user-guide.md` completely and answer only the relevant parts in the user's language.
+When the user asks how to install, update, migrate, start, enter or resume a profile, interpret results, manage the sales list, update conditions, or troubleshoot the workflow, read `references/user-guide.md` completely and answer only the relevant parts in the user's language.
 
 When the user asks for a prompt, an example request, broader discovery, a scoring audit, candidate comparison, exclusions, outreach preparation, or pipeline management, read `references/prompt-library.md` completely and provide the smallest useful copy-ready prompt or group of prompts. Do not execute a displayed prompt unless the user also asks to run it.
 
@@ -95,11 +97,12 @@ When the user asks for a prompt, an example request, broader discovery, a scorin
 - Default strong-recommendation threshold: 95 points.
 - Default evidence minimum for recommendation: 75 percent.
 - Default result count: top 5; expand to at most 10 when high-scoring candidates are scarce.
+- Default durable profile path after explicit user confirmation: `営業管理/プロフィール.md` in the current workspace.
 - Default durable sales directory after user confirmation: `営業管理` in the current workspace.
 - A current user's explicit thresholds and fixed conditions override these defaults only for that user.
 
 ## Version isolation
 
-Treat this as v3.1.3 with the v3.0.3 research core. Do not load or merge v2 scoring instructions, fixed 97-point gates, prior user profiles, legacy research state, or another user's sales data.
+Treat this as v3.1.4 with the v3.0.3 research core. Do not load or merge v2 scoring instructions, fixed 97-point gates, profiles from another workspace or user, legacy research state, or another user's sales data.
 
 When this plugin is enabled, do not also attach an older ZIP package in the same new chat. If conflicting versions are active, report the conflict and ask the user to continue in a new chat with only this plugin enabled.

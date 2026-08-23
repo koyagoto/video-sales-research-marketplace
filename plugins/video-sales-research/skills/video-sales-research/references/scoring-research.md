@@ -103,6 +103,27 @@ Do not exclude solely because compensation, frequency, department ownership, or 
 
 Apply the current user's exclusion list only to that user.
 
+## Buyer-type diversification
+
+Do not let production companies or video-production partner registries occupy the entire result merely because their public application evidence is easier to verify.
+
+Before finalizing results, search meaningful buyer-type lanes independently:
+
+- Production companies and video-production partners.
+- Advertising agencies and PR companies.
+- Web studios, digital-marketing companies, and social-media operators.
+- Recruitment, event, and other direct business buyers when relevant to the confirmed profile.
+
+Aim for at least 40 percent of the evaluated discovery pool to come from non-production buyers when viable official leads exist. This is a discovery-allocation target, not a scoring bonus or recommendation quota.
+
+Keep the ordinary top five as the highest-quality core candidates under the unchanged scoring and evidence rules. Then add a separate buyer-diversity section with up to three non-duplicate candidates from advertising or PR, web or digital marketing, and other direct buyers. The combined display is therefore at most eight companies. Prefer at least one advertising or PR candidate and at least one web or digital-marketing candidate when their evidence supports inclusion.
+
+Deduplicate against the core list and within the diversity section by normalized official URL first and normalized company name second.
+
+Include a diversity candidate only when its official identity is consistent, it passes the fraud and hard-exclusion screens, and current official evidence establishes external demand or a verifiable commercial path. A candidate may score below 90, but it must retain its actual score and lower decision category. Never add points, waive evidence requirements, lower recommendation thresholds, replace stronger core candidates, or call a lower-tier candidate a recommendation solely to satisfy a buyer-type target.
+
+Do not force the section to contain three companies. When fewer than three candidates pass the inclusion checks, return one or two candidates, or none, and state the category searched, number reviewed, and missing evidence or exclusion reason.
+
 ## Staged discovery when results are scarce
 
 Do not stop after the first pass when no candidate meets the recommendation threshold. Keep the scoring standard fixed and expand discovery in order:
@@ -113,7 +134,7 @@ Do not stop after the first pass when no candidate meets the recommendation thre
 4. Geography: preferred local area, realistic travel area, remote-compatible national work, then travel-by-agreement opportunities.
 5. Decision level: recommendation, conditional, development, then research lead.
 
-Normally show the top 5. When recommended candidates are scarce, show up to 10 across the lower decision levels.
+Show up to five core candidates. When recommended candidates are scarce, use the lower decision levels to complete that core list without exceeding five, then add only the separately qualified buyer-diversity candidates described above. The combined display remains at most eight companies.
 
 Do not return only “no matching company.” Report the number of recommended, conditional, development, research, and excluded candidates after completing the expansion stages. If no recommendation exists, say so truthfully and still show useful lower-tier leads with their missing conditions.
 

@@ -1,6 +1,6 @@
 {
   "name": "video-sales-research",
-  "version": "3.1.3",
+  "version": "3.1.4",
   "description": "映像制作者向けの営業候補調査、100点採点、詐欺・個人情報対策、段階的再探索、営業進捗管理をまとめたプラグイン",
   "author": {
     "name": "Video Sales Research Project"
@@ -15,9 +15,9 @@
   ],
   "skills": "./skills/",
   "interface": {
-    "displayName": "映像営業調査 v3.1.3",
+    "displayName": "映像営業調査 v3.1.4",
     "shortDescription": "安全確認付きの営業調査・採点・進捗管理",
-    "longDescription": "プロフィール一括登録を起点に、現在の公式情報を確認した営業候補調査、100点採点、詐欺・なりすまし確認、候補不足時の段階的な再探索、送信・返信・面談・受注の営業リスト管理まで支援します。",
+    "longDescription": "プロフィール一括登録と保存済みプロフィールの再開を起点に、現在の公式情報を確認した営業候補調査、100点採点、詐欺・なりすまし確認、候補不足時の段階的な再探索、送信・返信・面談・受注の営業リスト管理まで支援します。",
     "developerName": "Video Sales Research Project",
     "category": "Productivity",
     "capabilities": [
@@ -26,6 +26,7 @@
     ],
     "defaultPrompt": [
       "初期プロフィールの一括入力画面を表示してください。",
+      "保存済みプロフィールと営業実績を読み込んでください。",
       "現在のプロフィールで営業候補企業を調査してください。",
       "営業リストの状況と送信・面談・受注件数を表示してください。"
     ],

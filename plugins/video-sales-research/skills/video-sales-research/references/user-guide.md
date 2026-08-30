@@ -1,16 +1,27 @@
 # 映像営業調査 v3.1.4 プラグイン利用説明書
 
-## 初回だけ行う準備（Mac・約20分）
+## 初回だけ行う準備（Windows／macOS・約20分）
 
 この準備は最初の1回だけです。公開リポジトリを読み込むため、利用者側のGitHubアカウントは不要です。
 
-### 1. Macの「ターミナル」を開く
+### 1. お使いのパソコンのターミナルを開く
 
-Finderで「アプリケーション」→「ユーティリティ」→「ターミナル」の順に開きます。Codex画面内にターミナルのボタンがない場合も、Macの「ターミナル」を使用すれば進められます。
+- Windows：スタートメニューで `PowerShell` を検索して開きます。
+- macOS：Finderで「アプリケーション」→「ユーティリティ」→「ターミナル」の順に開きます。
+
+Codex画面の「何でもどうぞ」と書かれた入力欄とは別の画面です。
 
 ### 2. Codex CLIをインストールする
 
-次の1行を貼り付け、Returnキーを押します。`chatgpt.com`の公式インストーラー以外は使用しません。
+お使いのパソコンに合う1行だけを貼り付け、Enterキーを押します。`chatgpt.com`の公式インストーラー以外は使用しません。
+
+Windows：
+
+```powershell
+powershell -ExecutionPolicy ByPass -c "irm https://chatgpt.com/codex/install.ps1 | iex"
+```
+
+macOS：
 
 ```sh
 curl -fsSL https://chatgpt.com/codex/install.sh | sh
@@ -18,7 +29,15 @@ curl -fsSL https://chatgpt.com/codex/install.sh | sh
 
 `Codex CLI ... installed successfully.`と表示されたら成功です。`Start Codex now? [y/N]`と表示された場合は、`n`を入力してこの手順を続けて構いません。
 
-### 3. ターミナルへ設定を反映する
+### 3. インストールを確認する
+
+WindowsはPowerShellをいったん閉じ、もう一度開いてから確認します。
+
+```powershell
+codex --version
+```
+
+macOSは次の2行を順番に実行します。
 
 ```sh
 source ~/.zprofile
@@ -50,7 +69,7 @@ codex plugin add video-sales-research@video-sales-research-public
 
 ### 6. アプリを再起動する
 
-ChatGPTデスクトップアプリを`command + Q`で完全に終了し、もう一度起動します。
+Codexデスクトップアプリを完全に終了し、もう一度起動します。Windowsは通知領域にアプリが残っていないことを確認し、macOSは`command + Q`で終了します。
 
 ## 通常利用を開始する
 
@@ -84,13 +103,9 @@ URLで確認できる実績を一件ずつ入力する必要はありません�
 
 保存先を確認された場合は、現在のプロジェクト内の `営業管理` を指定します。まだチャットへ報告していない返信や面談がある場合は、保存前にその内容を伝えます。
 
-### 2. Macのターミナルで更新する
+### 2. ターミナルで更新する
 
-次の3行を一行ずつ実行します。
-
-```sh
-source ~/.zprofile
-```
+次の2行を一行ずつ実行します。
 
 ```sh
 codex plugin marketplace upgrade video-sales-research-public
@@ -100,7 +115,9 @@ codex plugin marketplace upgrade video-sales-research-public
 codex plugin add video-sales-research@video-sales-research-public
 ```
 
-インストール先の末尾に `3.1.4` と表示されたら、ChatGPTデスクトップアプリを `command + Q` で完全に終了し、もう一度起動します。
+`codex`が見つからない場合はターミナルを閉じて開き直します。macOSでは`source ~/.zprofile`を実行してから、上の2行をもう一度実行してください。
+
+インストール先の末尾に `3.1.4` と表示されたら、Codexデスクトップアプリを完全に終了し、もう一度起動します。Windowsは通知領域にアプリが残っていないことを確認し、macOSは`command + Q`で終了します。
 
 ### 3. 同じプロジェクトの新しいチャットで読み込む
 
@@ -114,16 +131,15 @@ codex plugin add video-sales-research@video-sales-research-public
 
 ## 初回インストールで困った場合
 
-### `zsh: command not found: codex`と表示された
+### `command not found`または「認識されていません」と表示された
 
-Codex CLIのインストール直後なら、次を実行します。
+ターミナルを完全に閉じてからもう一度開き、`codex --version`を実行します。macOSでは、その前に次も実行します。
 
 ```sh
 source ~/.zprofile
-codex --version
 ```
 
-解消しない場合はターミナルを完全に閉じ、新しく開いてから`codex --version`を実行します。Codex CLIをまだインストールしていない場合は、初回準備の手順2から実行します。
+それでも解消しない場合は、エラー全体のスクリーンショットを保存して運営者へ送ってください。Codex CLIをまだインストールしていない場合は、初回準備の手順2から実行します。
 
 ### 途中で英語の作業中表示が出た
 

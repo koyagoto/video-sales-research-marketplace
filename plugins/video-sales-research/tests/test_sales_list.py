@@ -190,6 +190,15 @@ class SalesListScriptTest(unittest.TestCase):
         validated = self.run_script("validate", "--dir", str(self.data_dir))
         self.assertEqual(validated, {"result": "valid", "issues": []})
 
+    def test_validate_is_read_only_when_sales_files_are_missing(self):
+        validated = self.run_script("validate", "--dir", str(self.data_dir))
+
+        self.assertEqual(validated["result"], "invalid")
+        self.assertEqual(len(validated["issues"]), 2)
+        self.assertIn("営業リスト.csvが見つかりません", validated["issues"][0])
+        self.assertIn("営業活動履歴.csvが見つかりません", validated["issues"][1])
+        self.assertFalse(self.data_dir.exists())
+
 
 if __name__ == "__main__":
     unittest.main()

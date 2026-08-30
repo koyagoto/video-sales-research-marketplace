@@ -585,7 +585,18 @@ def collect_validation_issues(
 
 
 def command_validate(args: argparse.Namespace) -> Dict[str, object]:
-    _, prospects_path, activities_path = ensure_files(args.dir)
+    _, prospects_path, activities_path = data_paths(args.dir)
+    missing = [
+        path.name
+        for path in (prospects_path, activities_path)
+        if not path.exists()
+    ]
+    if missing:
+        issues = [
+            f"{name}が見つかりません。新規作成せず確認を停止しました。"
+            for name in missing
+        ]
+        return {"result": "invalid", "issues": issues}
     prospects = read_rows(prospects_path, PROSPECT_HEADERS)
     activities = read_rows(activities_path, ACTIVITY_HEADERS)
     issues = collect_validation_issues(prospects, activities)

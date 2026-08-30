@@ -15,17 +15,30 @@
 - 送信、返信、面談、提案、受注、失注、保留、除外の管理
 - 営業活動履歴と件数・率の集計
 
-## 初回インストール（Mac・約20分）
+詳しい画面順の説明は、[はじめての方向け 導入・運用ガイド（PDF）](docs/映像営業調査_v3.1.4_はじめての方向け導入・運用ガイド.pdf)をご覧ください。
+
+## 初回インストール（Windows／macOS・約20分）
 
 この準備は最初の1回だけです。公開リポジトリを読み込むため、利用者側のGitHubアカウントは不要です。
 
-### 1. Macの「ターミナル」を開く
+### 1. お使いのパソコンのターミナルを開く
 
-Finderで「アプリケーション」→「ユーティリティ」→「ターミナル」の順に開きます。Codex画面内にターミナルのボタンが見つからない場合も、Macの「ターミナル」を使用すれば進められます。
+- Windows：スタートメニューで `PowerShell` を検索して開きます。
+- macOS：Finderで「アプリケーション」→「ユーティリティ」→「ターミナル」の順に開きます。
+
+Codex画面の「何でもどうぞ」と書かれた入力欄とは別の画面です。
 
 ### 2. Codex CLIをインストールする
 
-次の1行を貼り付け、Returnキーを押します。`chatgpt.com`の公式インストーラー以外は使用しません。
+お使いのパソコンに合う1行だけを貼り付け、Enterキーを押します。`chatgpt.com`の公式インストーラー以外は使用しません。
+
+Windows：
+
+```powershell
+powershell -ExecutionPolicy ByPass -c "irm https://chatgpt.com/codex/install.ps1 | iex"
+```
+
+macOS：
 
 ```sh
 curl -fsSL https://chatgpt.com/codex/install.sh | sh
@@ -33,7 +46,15 @@ curl -fsSL https://chatgpt.com/codex/install.sh | sh
 
 `Codex CLI ... installed successfully.`と表示されたら成功です。`Start Codex now? [y/N]`と表示された場合は、`n`を入力してこの手順を続けて構いません。
 
-### 3. ターミナルへ設定を反映する
+### 3. インストールを確認する
+
+WindowsはPowerShellをいったん閉じ、もう一度開いてから確認します。
+
+```powershell
+codex --version
+```
+
+macOSは次の2行を順番に実行します。
 
 ```sh
 source ~/.zprofile
@@ -65,7 +86,7 @@ codex plugin add video-sales-research@video-sales-research-public
 
 ### 6. アプリを再起動して開始する
 
-1. ChatGPTデスクトップアプリを`command + Q`で完全に終了します。
+1. Codexデスクトップアプリを完全に終了します。Windowsは通知領域にアプリが残っていないことを確認し、macOSは`command + Q`で終了します。
 2. アプリを再起動します。
 3. 利用者ごとに新しいプロジェクトまたは作業フォルダを選び、新規チャットを作成します。
 4. 次の文章を送信します。
@@ -76,16 +97,15 @@ codex plugin add video-sales-research@video-sales-research-public
 
 ## 初回インストールで困った場合
 
-### `zsh: command not found: codex`と表示された
+### `command not found`または「認識されていません」と表示された
 
-Codex CLIのインストール直後なら、次を実行します。
+ターミナルを完全に閉じてからもう一度開き、`codex --version`を実行します。macOSでは、その前に次も実行します。
 
 ```sh
 source ~/.zprofile
-codex --version
 ```
 
-解消しない場合はターミナルを完全に閉じ、新しく開いてから`codex --version`を実行します。Codex CLIをまだインストールしていない場合は、手順2から実行します。
+それでも解消しない場合は、エラー全体のスクリーンショットを保存して運営者へ送ってください。Codex CLIをまだインストールしていない場合は、手順2から実行します。
 
 ### 途中で英語の作業中表示が出た
 

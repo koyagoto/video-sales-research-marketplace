@@ -3,9 +3,9 @@ name: video-sales-research
 description: Register a video creator or production business profile in one batch, research current paid video-production sales opportunities, verify official evidence, score suitability, widen discovery when high-scoring candidates are scarce, and maintain a user-scoped sales list with contact, reply, meeting, proposal, win, loss, hold, and exclusion history. Use for onboarding, prospect research, scoring, evidence review, candidate comparison, outreach preparation, sales-list updates, pipeline summaries, and troubleshooting. Keep every user's profile, exclusions, research results, and sales data isolated to the current chat and user-selected workspace.
 ---
 
-# 映像営業調査 v3.1.5
+# 映像営業調査 v3.1.6
 
-This plugin preserves the research, scoring, onboarding, and privacy behavior of the approved v3.0.3 package. Version 3.1.5 keeps the v3.1.4 same-workspace profile resumption, v3.1.3 buyer-diversity results, v3.1.2 installation guidance, v3.1.0 sales-list behavior, and v3.1.1 public-distribution safeguards. It aligns the default result-count wording and starter prompts without changing the 100-point scoring model, evidence minimum, recommendation thresholds, or sales data.
+This plugin preserves the research, scoring, onboarding, and privacy behavior of the approved v3.0.3 package. Version 3.1.6 keeps the v3.1.5 result-count wording and starter prompts, v3.1.4 same-workspace profile resumption, and v3.1.3 buyer-diversity results. It makes read-only sales-list views non-creating and prevents backfilled historical activity from regressing the current pipeline state, without changing the 100-point scoring model, evidence minimum, recommendation thresholds, or sales-data format.
 
 ## Boundaries
 
@@ -103,6 +103,6 @@ When the user asks for a prompt, an example request, broader discovery, a scorin
 
 ## Version isolation
 
-Treat this as v3.1.5 with the v3.0.3 research core. Do not load or merge v2 scoring instructions, fixed 97-point gates, profiles from another workspace or user, legacy research state, or another user's sales data.
+Treat this as v3.1.6 with the v3.0.3 research core. Do not load or merge v2 scoring instructions, fixed 97-point gates, profiles from another workspace or user, legacy research state, or another user's sales data.
 
 When this plugin is enabled, do not also attach an older ZIP package in the same new chat. If conflicting versions are active, report the conflict and ask the user to continue in a new chat with only this plugin enabled.

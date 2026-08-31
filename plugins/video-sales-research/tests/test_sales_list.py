@@ -1,3 +1,4 @@
+import csv
 import json
 import subprocess
 import sys
@@ -300,6 +301,94 @@ class SalesListScriptTest(unittest.TestCase):
         )
         self.assertTrue(first_business_event["status_updated"])
         self.assertEqual(first_business_event["status"], "送信済み")
+
+    def test_formula_like_csv_values_are_stored_as_text_and_round_trip(self):
+        created = self.run_script(
+            "upsert",
+            "--dir",
+            str(self.data_dir),
+            "--company",
+            "=2+2",
+            "--official-url",
+            "https://formula.example.invalid/",
+            "--next-action",
+            "+次の対応",
+            "--owner",
+            "＠担当者",
+            "--note",
+            " -見積確認",
+        )
+
+        prospect_text = (self.data_dir / "営業リスト.csv").read_text(encoding="utf-8-sig")
+        activity_text = (self.data_dir / "営業活動履歴.csv").read_text(encoding="utf-8-sig")
+        self.assertIn('"\t=2+2"', prospect_text)
+        self.assertIn('"\t+次の対応"', prospect_text)
+        self.assertIn('"\t＠担当者"', prospect_text)
+        self.assertIn('"\t-見積確認"', prospect_text)
+        self.assertIn('"\t=2+2"', activity_text)
+
+        listed = self.run_script("list", "--dir", str(self.data_dir))
+        row = listed["prospects"][0]
+        self.assertEqual(row["企業名"], "=2+2")
+        self.assertEqual(row["次の行動"], "+次の対応")
+
+        updated = self.run_script(
+            "upsert",
+            "--dir",
+            str(self.data_dir),
+            "--company",
+            "=2+2",
+            "--official-url",
+            "https://formula.example.invalid/",
+            "--decision",
+            "暫定推薦",
+        )
+        self.assertEqual(updated["result"], "updated")
+        self.assertEqual(updated["company_id"], created["company_id"])
+        self.assertEqual(self.run_script("list", "--dir", str(self.data_dir))["count"], 1)
+
+        rewritten_text = (self.data_dir / "営業リスト.csv").read_text(encoding="utf-8-sig")
+        self.assertNotIn('"\t\t=2+2"', rewritten_text)
+        self.assertEqual(
+            self.run_script("validate", "--dir", str(self.data_dir)),
+            {"result": "valid", "issues": []},
+        )
+
+    def test_legacy_csv_values_are_sanitized_on_the_next_write(self):
+        self.run_script("init", "--dir", str(self.data_dir))
+        prospect_path = self.data_dir / "営業リスト.csv"
+        with prospect_path.open("r", encoding="utf-8-sig", newline="") as handle:
+            headers = next(csv.reader(handle))
+        legacy_row = {header: "" for header in headers}
+        legacy_row.update(
+            {
+                "企業ID": "cmp-legacy",
+                "企業名": "=旧形式",
+                "進捗状態": "候補",
+                "メモ": "@旧メモ",
+                "更新日時": "2026-08-30T12:00:00+09:00",
+            }
+        )
+        with prospect_path.open("w", encoding="utf-8-sig", newline="") as handle:
+            writer = csv.DictWriter(handle, fieldnames=headers)
+            writer.writeheader()
+            writer.writerow(legacy_row)
+
+        listed = self.run_script("list", "--dir", str(self.data_dir))
+        self.assertEqual(listed["prospects"][0]["企業名"], "=旧形式")
+        updated = self.run_script(
+            "upsert",
+            "--dir",
+            str(self.data_dir),
+            "--company",
+            "=旧形式",
+            "--decision",
+            "暫定推薦",
+        )
+        self.assertEqual(updated["company_id"], "cmp-legacy")
+        rewritten = prospect_path.read_text(encoding="utf-8-sig")
+        self.assertIn('"\t=旧形式"', rewritten)
+        self.assertIn('"\t@旧メモ"', rewritten)
 
 
 if __name__ == "__main__":

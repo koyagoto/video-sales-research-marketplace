@@ -68,6 +68,18 @@ VALID_STATES = {
     "除外",
 }
 
+PIPELINE_STATE_ORDER = {
+    "候補": 0,
+    "準備中": 1,
+    "送信済み": 2,
+    "返信あり": 3,
+    "面談": 4,
+    "提案": 5,
+    "受注": 6,
+}
+
+TERMINAL_OR_PAUSED_STATES = {"失注", "保留", "除外"}
+
 EVENT_ALIASES = {
     "candidate": "候補登録",
     "候補": "候補登録",
@@ -109,6 +121,8 @@ STATE_BY_EVENT = {
     "保留": "保留",
     "除外": "除外",
 }
+
+TIMELINE_EVENT_TYPES = set(STATE_BY_EVENT) - {"候補登録"}
 
 DATE_FIELD_BY_EVENT = {
     "送信": "送信日",
@@ -231,6 +245,21 @@ def ensure_files(raw_dir: str) -> Tuple[Path, Path, Path]:
         read_rows(activities_path, ACTIVITY_HEADERS)
     else:
         atomic_write(activities_path, ACTIVITY_HEADERS, [])
+    return data_dir, prospects_path, activities_path
+
+
+def require_existing_files(raw_dir: str) -> Tuple[Path, Path, Path]:
+    data_dir, prospects_path, activities_path = data_paths(raw_dir)
+    missing = [
+        path.name
+        for path in (prospects_path, activities_path)
+        if not path.exists()
+    ]
+    if missing:
+        names = "、".join(missing)
+        raise SalesListError(
+            f"{names}が見つかりません。新規作成せず確認を停止しました。"
+        )
     return data_dir, prospects_path, activities_path
 
 
@@ -391,6 +420,37 @@ def canonical_event_type(value: str) -> str:
     return event_type
 
 
+def latest_status_activity_date(
+    activities: Sequence[Dict[str, str]], company_id: str
+) -> str:
+    dates = [
+        row.get("活動日", "")
+        for row in activities
+        if row.get("企業ID", "") == company_id
+        and row.get("活動種別", "") in TIMELINE_EVENT_TYPES
+        and re.fullmatch(r"\d{4}-\d{2}-\d{2}", row.get("活動日", ""))
+    ]
+    return max(dates, default="")
+
+
+def should_update_current_state(
+    current_state: str,
+    next_state: str,
+    activity_date: str,
+    latest_state_date: str,
+) -> bool:
+    if latest_state_date and activity_date < latest_state_date:
+        return False
+    if latest_state_date and activity_date == latest_state_date:
+        if current_state in TERMINAL_OR_PAUSED_STATES and next_state in PIPELINE_STATE_ORDER:
+            return False
+        current_order = PIPELINE_STATE_ORDER.get(current_state)
+        next_order = PIPELINE_STATE_ORDER.get(next_state)
+        if current_order is not None and next_order is not None and next_order < current_order:
+            return False
+    return True
+
+
 def command_event(args: argparse.Namespace) -> Dict[str, object]:
     event_type = canonical_event_type(args.type)
     validate_date(args.date, "活動日")
@@ -408,8 +468,15 @@ def command_event(args: argparse.Namespace) -> Dict[str, object]:
     row = prospects[matches[0]]
     activity_date = args.date or today_iso()
 
+    status_updated = False
     if event_type in STATE_BY_EVENT:
-        row["進捗状態"] = STATE_BY_EVENT[event_type]
+        next_state = STATE_BY_EVENT[event_type]
+        latest_state_date = latest_status_activity_date(activities, row["企業ID"])
+        if should_update_current_state(
+            row.get("進捗状態", ""), next_state, activity_date, latest_state_date
+        ):
+            row["進捗状態"] = next_state
+            status_updated = True
     date_field = DATE_FIELD_BY_EVENT.get(event_type)
     if date_field:
         row[date_field] = activity_date
@@ -434,6 +501,7 @@ def command_event(args: argparse.Namespace) -> Dict[str, object]:
         "event": event_type,
         "activity_date": activity_date,
         "status": row["進捗状態"],
+        "status_updated": status_updated,
         "activity_id": activity["活動ID"],
     }
 
@@ -449,7 +517,7 @@ def last_activity_by_company(activities: Sequence[Dict[str, str]]) -> Dict[str, 
 
 
 def command_list(args: argparse.Namespace) -> Dict[str, object]:
-    _, prospects_path, activities_path = ensure_files(args.dir)
+    _, prospects_path, activities_path = require_existing_files(args.dir)
     prospects = read_rows(prospects_path, PROSPECT_HEADERS)
     activities = read_rows(activities_path, ACTIVITY_HEADERS)
     latest = last_activity_by_company(activities)
@@ -491,7 +559,7 @@ def percentage(numerator: int, denominator: int) -> float:
 
 
 def command_summary(args: argparse.Namespace) -> Dict[str, object]:
-    _, prospects_path, activities_path = ensure_files(args.dir)
+    _, prospects_path, activities_path = require_existing_files(args.dir)
     prospects = read_rows(prospects_path, PROSPECT_HEADERS)
     activities = read_rows(activities_path, ACTIVITY_HEADERS)
     status_counts = {state: 0 for state in sorted(VALID_STATES)}

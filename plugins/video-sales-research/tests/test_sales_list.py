@@ -199,6 +199,108 @@ class SalesListScriptTest(unittest.TestCase):
         self.assertIn("営業活動履歴.csvが見つかりません", validated["issues"][1])
         self.assertFalse(self.data_dir.exists())
 
+    def test_list_and_summary_are_read_only_when_sales_files_are_missing(self):
+        for command in ("list", "summary"):
+            with self.subTest(command=command):
+                result = self.run_script(
+                    command,
+                    "--dir",
+                    str(self.data_dir),
+                    expected_code=2,
+                )
+                self.assertEqual(result["result"], "error")
+                self.assertIn("新規作成せず確認を停止", result["message"])
+                self.assertFalse(self.data_dir.exists())
+
+    def test_backfilled_activity_does_not_regress_current_status(self):
+        created = self.run_script(
+            "upsert",
+            "--dir",
+            str(self.data_dir),
+            "--company",
+            "履歴確認株式会社",
+            "--checked-date",
+            "2026-08-16",
+        )
+        company_id = created["company_id"]
+        for event_type, event_date in [
+            ("送信", "2026-08-18"),
+            ("返信", "2026-08-19"),
+            ("面談", "2026-08-20"),
+        ]:
+            recorded = self.run_script(
+                "event",
+                "--dir",
+                str(self.data_dir),
+                "--company-id",
+                company_id,
+                "--type",
+                event_type,
+                "--date",
+                event_date,
+            )
+            self.assertTrue(recorded["status_updated"])
+
+        backfilled = self.run_script(
+            "event",
+            "--dir",
+            str(self.data_dir),
+            "--company-id",
+            company_id,
+            "--type",
+            "送信",
+            "--date",
+            "2026-08-17",
+            "--note",
+            "過去分を後から記録",
+        )
+        self.assertFalse(backfilled["status_updated"])
+        self.assertEqual(backfilled["status"], "面談")
+
+        same_day_backfill = self.run_script(
+            "event",
+            "--dir",
+            str(self.data_dir),
+            "--company-id",
+            company_id,
+            "--type",
+            "返信",
+            "--date",
+            "2026-08-20",
+        )
+        self.assertFalse(same_day_backfill["status_updated"])
+        self.assertEqual(same_day_backfill["status"], "面談")
+
+        listed = self.run_script("list", "--dir", str(self.data_dir))
+        self.assertEqual(listed["prospects"][0]["進捗状態"], "面談")
+        summary = self.run_script("summary", "--dir", str(self.data_dir))
+        self.assertEqual(summary["counts"]["送信済み企業数"], 1)
+        self.assertEqual(summary["counts"]["返信企業数"], 1)
+        self.assertEqual(summary["counts"]["面談企業数"], 1)
+
+        second = self.run_script(
+            "upsert",
+            "--dir",
+            str(self.data_dir),
+            "--company",
+            "初回履歴株式会社",
+            "--checked-date",
+            "2026-08-25",
+        )
+        first_business_event = self.run_script(
+            "event",
+            "--dir",
+            str(self.data_dir),
+            "--company-id",
+            second["company_id"],
+            "--type",
+            "送信",
+            "--date",
+            "2026-08-10",
+        )
+        self.assertTrue(first_business_event["status_updated"])
+        self.assertEqual(first_business_event["status"], "送信済み")
+
 
 if __name__ == "__main__":
     unittest.main()

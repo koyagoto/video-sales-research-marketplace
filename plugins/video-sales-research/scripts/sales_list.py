@@ -146,6 +146,9 @@ DATE_FIELDS = {
     "除外日",
 }
 
+CSV_FORMULA_PREFIXES = ("=", "+", "-", "@", "＝", "＋", "－", "＠", "\t", "\r", "\n")
+CSV_TEXT_PREFIX = "\t"
+
 
 class SalesListError(RuntimeError):
     pass
@@ -193,6 +196,25 @@ def data_paths(raw_dir: str) -> Tuple[Path, Path, Path]:
     return data_dir, data_dir / PROSPECT_FILENAME, data_dir / ACTIVITY_FILENAME
 
 
+def starts_with_csv_formula_trigger(value: str) -> bool:
+    candidate = (value or "").lstrip(" \u00a0\u3000")
+    return bool(candidate) and candidate.startswith(CSV_FORMULA_PREFIXES)
+
+
+def sanitize_csv_cell(value: object) -> str:
+    text = "" if value is None else str(value)
+    if starts_with_csv_formula_trigger(text):
+        return f"{CSV_TEXT_PREFIX}{text}"
+    return text
+
+
+def restore_csv_cell(value: object) -> str:
+    text = "" if value is None else str(value)
+    if text.startswith(CSV_TEXT_PREFIX) and starts_with_csv_formula_trigger(text[1:]):
+        return text[1:]
+    return text
+
+
 def atomic_write(path: Path, headers: Sequence[str], rows: Iterable[Dict[str, str]]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     handle = tempfile.NamedTemporaryFile(
@@ -207,10 +229,17 @@ def atomic_write(path: Path, headers: Sequence[str], rows: Iterable[Dict[str, st
     temporary = Path(handle.name)
     try:
         with handle:
-            writer = csv.DictWriter(handle, fieldnames=list(headers), extrasaction="ignore")
+            writer = csv.DictWriter(
+                handle,
+                fieldnames=list(headers),
+                extrasaction="ignore",
+                quoting=csv.QUOTE_ALL,
+            )
             writer.writeheader()
             for row in rows:
-                writer.writerow({header: row.get(header, "") for header in headers})
+                writer.writerow(
+                    {header: sanitize_csv_cell(row.get(header, "")) for header in headers}
+                )
         os.replace(str(temporary), str(path))
     except Exception:
         if temporary.exists():
@@ -229,7 +258,10 @@ def read_rows(path: Path, expected_headers: Sequence[str]) -> List[Dict[str, str
                 raise SalesListError(
                     f"{path.name}の列構成が一致しません。自動上書きせず確認を停止しました。"
                 )
-            return [dict(row) for row in reader]
+            return [
+                {header: restore_csv_cell(row.get(header, "")) for header in expected_headers}
+                for row in reader
+            ]
     except UnicodeDecodeError as exc:
         raise SalesListError(f"{path.name}をUTF-8として読み取れません。") from exc
 
